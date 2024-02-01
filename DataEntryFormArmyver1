@@ -1,1 +1,158 @@
-//Im gona write something here
+//Simple Data Entry Form for ARMY
+
+const hojaActiva = SpreadsheetApp.getActiveSpreadsheet();
+//Google Sheet document, the active WorkSheet
+
+const formulario = hojaActiva.getSheetByName("Formulary");
+const datos = hojaActiva.getSheetByName("Data");
+//Names of the formulary WorkSheet and the data WorkSheet, always copypaste them
+
+const valorRange = formulario.getRange("G2")
+const valorSearch = valorRange.getValue();
+const valores = datos.getDataRange().getValues();
+const celdasModif = ["D2", "D4", "D5", "D6", "D7", "D9", "D10", "D11", "D12", "D13", "D14", "G10", "G11", "G12", "G13", "D16", "D17", "D18", "G16", "G17", "G18", "D20", "B21", "B22", "B23", "B24", "B25", "B26", "B27", "F21", "D29", "D31"];
+const NUM_COLUMNA_BUSQUEDA = 0;
+//Cells that will show the data into the formulary WorkSheet
+//The "fieldRange" order will be like the one in the data WorkSheet (see "ListCol" sheet)
+//The "fieldValues" will go through all the cells in "fieldRange" in this array
+
+function Limpiar() {
+  celdasModif.forEach(f => formulario.getRange(f).clearContent())
+  valorRange.clearContent()
+}
+
+function Guardar() {
+  var valoresG = [[formulario.getRange("D2").getValue(),
+  formulario.getRange("D4").getValue(),
+  formulario.getRange("D5").getValue(),
+  formulario.getRange("D6").getValue(),
+  formulario.getRange("D7").getValue(),
+  formulario.getRange("D9").getValue(),
+  formulario.getRange("D10").getValue(),
+  formulario.getRange("D11").getValue(),
+  formulario.getRange("D12").getValue(),
+  formulario.getRange("D13").getValue(),
+  formulario.getRange("D14").getValue(),
+  formulario.getRange("G10").getValue(),
+  formulario.getRange("G11").getValue(),
+  formulario.getRange("G12").getValue(),
+  formulario.getRange("G13").getValue(),
+  formulario.getRange("D16").getValue(),
+  formulario.getRange("D17").getValue(),
+  formulario.getRange("D18").getValue(),
+  formulario.getRange("G16").getValue(),
+  formulario.getRange("G17").getValue(),
+  formulario.getRange("G18").getValue(),
+  formulario.getRange("D20").getValue(),
+  formulario.getRange("B21").getValue(),
+  formulario.getRange("B22").getValue(),
+  formulario.getRange("B23").getValue(),
+  formulario.getRange("B24").getValue(),
+  formulario.getRange("B25").getValue(),
+  formulario.getRange("B26").getValue(),
+  formulario.getRange("B27").getValue(),
+  formulario.getRange("F21").getValue(),
+  formulario.getRange("D29").getValue(),
+  formulario.getRange("D31").getValue()]];
+  datos.getRange(datos.getLastRow() + 1, 1, 1, 32).setValues(valoresG);
+  Limpiar();
+}
+
+function Buscar() {
+  for (var i = 0; i < valores.length; i++) {
+    var fila = valores[i];
+    if (fila[NUM_COLUMNA_BUSQUEDA] == valorSearch) {
+      formulario.getRange("D2").setValue(fila[0]);
+      formulario.getRange("D4").setValue(fila[1]);
+      formulario.getRange("D5").setValue(fila[2]);
+      formulario.getRange("D6").setValue(fila[3]);
+      formulario.getRange("D7").setValue(fila[4]);
+      formulario.getRange("D9").setValue(fila[5]);
+      formulario.getRange("D10").setValue(fila[6]);
+      formulario.getRange("D11").setValue(fila[7]);
+      formulario.getRange("D12").setValue(fila[8]);
+      formulario.getRange("D13").setValue(fila[9]);
+      formulario.getRange("D14").setValue(fila[10]);
+      formulario.getRange("G10").setValue(fila[11]);
+      formulario.getRange("G11").setValue(fila[12]);
+      formulario.getRange("G12").setValue(fila[13]);
+      formulario.getRange("G13").setValue(fila[14]);
+      formulario.getRange("D16").setValue(fila[15]);
+      formulario.getRange("D17").setValue(fila[16]);
+      formulario.getRange("D18").setValue(fila[17]);
+      formulario.getRange("G16").setValue(fila[18]);
+      formulario.getRange("G17").setValue(fila[19]);
+      formulario.getRange("G18").setValue(fila[20]);
+      formulario.getRange("D20").setValue(fila[21]);
+      formulario.getRange("B21").setValue(fila[22]);
+      formulario.getRange("B22").setValue(fila[23]);
+      formulario.getRange("B23").setValue(fila[24]);
+      formulario.getRange("B24").setValue(fila[25]);
+      formulario.getRange("B25").setValue(fila[26]);
+      formulario.getRange("B26").setValue(fila[27]);
+      formulario.getRange("B27").setValue(fila[28]);
+      formulario.getRange("F21").setValue(fila[29]);
+      formulario.getRange("D29").setValue(fila[30]);
+      formulario.getRange("D31").setValue(fila[31]);
+    }
+  }
+}
+
+function Actualizar() {
+  for (var i = 0; i < valores.length; i++) {
+    var fila = valores[i];
+    if (fila[NUM_COLUMNA_BUSQUEDA] == valorSearch) {
+      var INT_R = i + 1
+      var valores1 = [[formulario.getRange("D2").getValue(),
+      formulario.getRange("D4").getValue(),
+      formulario.getRange("D5").getValue(),
+      formulario.getRange("D6").getValue(),
+      formulario.getRange("D7").getValue(),
+      formulario.getRange("D9").getValue(),
+      formulario.getRange("D10").getValue(),
+      formulario.getRange("D11").getValue(),
+      formulario.getRange("D12").getValue(),
+      formulario.getRange("D13").getValue(),
+      formulario.getRange("D14").getValue(),
+      formulario.getRange("G10").getValue(),
+      formulario.getRange("G11").getValue(),
+      formulario.getRange("G12").getValue(),
+      formulario.getRange("G13").getValue(),
+      formulario.getRange("D16").getValue(),
+      formulario.getRange("D17").getValue(),
+      formulario.getRange("D18").getValue(),
+      formulario.getRange("G16").getValue(),
+      formulario.getRange("G17").getValue(),
+      formulario.getRange("G18").getValue(),
+      formulario.getRange("D20").getValue(),
+      formulario.getRange("B21").getValue(),
+      formulario.getRange("B22").getValue(),
+      formulario.getRange("B23").getValue(),
+      formulario.getRange("B24").getValue(),
+      formulario.getRange("B25").getValue(),
+      formulario.getRange("B26").getValue(),
+      formulario.getRange("B27").getValue(),
+      formulario.getRange("F21").getValue(),
+      formulario.getRange("D29").getValue(),
+      formulario.getRange("D31").getValue()]];
+      datos.getRange(INT_R, 1, 1, 32).setValues(valores1);
+      SpreadsheetApp.getUi().alert('Datos actualizados');
+      Limpiar();
+    }
+  }
+}
+
+function Eliminar() {
+  var interface = SpreadsheetApp.getUi();
+  var respuesta = interface.alert('¿Está seguro de borrar?', interface.ButtonSet.YES_NO);
+  if (respuesta == interface.Button.YES) {
+    for (var i = 0; i < valores.length; i++) {
+      var fila = valores[i];
+      if (fila[NUM_COLUMNA_BUSQUEDA] == valorSearch) {
+        var INT_R = i + 1
+        datos.deleteRow(INT_R);
+        Limpiar();
+      }
+    }
+  }
+}
