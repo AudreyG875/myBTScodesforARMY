@@ -8,13 +8,6 @@ const dataWS = actWS.getSheetByName("FFDatav2")
 const autGIDWS = actWS.getSheetByName("Listsv2")
 //Names of the formulary WorkSheet and the data WorkSheet, always copypaste them
 
-function onEdit(e) {
-  if (!e)
-    throw "Do not run onEdit on Scrip Editor"
-  multipleSelection()
-  searchForm()
-}
-
 const searchCell = formWS.getRange("C4")
 const idCell = formWS.getRange("F4")
 const fieldRange = ["C5", "C6", "C7", "C8", "C10", "C11", "C12", "C13", "C14", "F11", "F12", "F13", "F14", "B17", "E17", "B20", "E20", "B23", "E23", "C25", "C26", "C27", "F25", "F26", "F27", "B30", "B33"]
@@ -23,8 +16,15 @@ const fieldValues = fieldRange.map(f => formWS.getRange(f).getValue())
 //The "fieldRange" order will be like the one in the data WorkSheet (see "ListCol" sheet)
 //The "fieldValues" will go through all the cells in "fieldRange" in this array
 
-//Don't change anything from these functions, except when instrucctions made
+//Don't change anything from these functions, except when instructions made
 //And you can only change information in RED or GREEN
+
+function onEdit(e) {
+  if (!e)
+    throw "Do not run onEdit on Scrip Editor"
+  multipleSelection()
+  searchForm()
+}
 
 function clearForm() {
   fieldRange.forEach(f => formWS.getRange(f).clearContent())
