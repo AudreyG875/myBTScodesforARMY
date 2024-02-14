@@ -12,19 +12,13 @@ const searchCell = formWS.getRange("C4")
 const idCell = formWS.getRange("F4")
 const fieldRange = ["C5", "C6", "C7", "C8", "C10", "C11", "C12", "C13", "C14", "F11", "F12", "F13", "F14", "B17", "E17", "B20", "E20", "B23", "E23", "C25", "C26", "C27", "F25", "F26", "F27", "B30", "B33"]
 const fieldValues = fieldRange.map(f => formWS.getRange(f).getValue())
+const fieldRange2 = ["C16", "F16", "C19", "F19", "C22"]
 //Cells that will show the data into the formulary WorkSheet
 //The "fieldRange" order will be like the one in the data WorkSheet (see "ListCol" sheet)
 //The "fieldValues" will go through all the cells in "fieldRange" in this array
 
-//Don't change anything from these functions, except when instructions made
+//Don't change anything from these functions, except when instrucctions made
 //And you can only change information in RED or GREEN
-
-function onEdit(e) {
-  if (!e)
-    throw "Do not run onEdit on Scrip Editor"
-  multipleSelection()
-  searchForm()
-}
 
 function clearForm() {
   fieldRange.forEach(f => formWS.getRange(f).clearContent())
@@ -33,14 +27,12 @@ function clearForm() {
 }
 
 function searchForm() {
-//How can I write here correctly "if(e.range.getA1Notation()!=="searchCell") return
-//  if(e.source.getSheetName()!== "FFDEFFormv2") return" because it asks me for "e"
-  const searchValue = searchCell.getValue()
+  const searchValue = searchCell.getDisplayValue()
   const dataSrchForm = dataWS.getRange("A2:AC").getValues()
   //Change the column J to the last column with info in your data WorkSheet
   const recordsFound = dataSrchForm.filter(r => r[28] == searchValue)
   //Change the 9 for the green number of the FANFIC ID in the ListCol3 sheet
-  if (recordsFound.lenght === 0) return
+  if (recordsFound.length === 0) return
   idCell.setValue(recordsFound[0][0])
   fieldRange.forEach((f, i) => formWS.getRange(f).setValue(recordsFound[0][i + 1]))
   //change the last 1 for the green number of the NAME in the ListCol3 sheet
@@ -98,20 +90,30 @@ function deleteRecord() {
 }
 
 function multipleSelection() {
-//How can I write here correctly "if(e.range.getA1Notation()!=="fieldRange2") return
-//  if(e.source.getSheetName()!== "FFDEFFormv2") return" because it asks me for "e"
-  const fieldRange2 = ["C16", "F16", "C19", "F19", "C22"]
-  const fieldValues2 = fieldRange2.map(f => formWS.getRange(f).getValue())
   var activeCell = SpreadsheetApp.getActiveRange()
   var activeValue = activeCell.getValue()
   var listCell = activeCell.offset(1, -1)
   var listValue = listCell.getValue()
   var checkForDuplicates = listValue.toString().indexOf(activeValue)
 
-  if (fieldValues2) {
+  if (fieldRange2 && formWS) {
     var newList = listValue + ", " + activeValue
     if (listValue == "") listCell.setValue(activeValue)
     else if (checkForDuplicates == -1) listCell.setValue(newList)
   }
   fieldRange2.forEach(f => formWS.getRange(f).clearContent())
+}
+
+function onEdit(e) {
+  if (!e)
+    throw "Do not run onEdit on Scrip Editor"
+  //Solved problem with onEdit function thanks to Big-Seesaw-4960 on r/googlesheets
+  //if active cell is C4, run searchForm, otherwise run multipleSelection
+  if (actWS.getActiveSheet().getName() == formWS.getName()) {
+    if (formWS.getActiveRange().getA1Notation()  == searchCell.getA1Notation()) {
+      searchForm()
+    } else {
+      multipleSelection()
+    } 
+  } 
 }
