@@ -1,0 +1,95 @@
+//Simple Data Entry general
+
+const actWS = SpreadsheetApp.getActiveSpreadsheet()
+//Google Sheet document, the active WorkSheet
+
+const formWS = actWS.getSheetByName("GoogleForm")
+const dataWS = actWS.getSheetByName("DataSheet")
+const autGIDWS = actWS.getSheetByName("AutoGenID")
+//Names of the formulary WorkSheet and the data WorkSheet, always copypaste them
+
+const searchCell = formWS.getRange("F2")
+const idCell = formWS.getRange("C2")
+const fieldRange = ["C4", "C6", "C8", "C10", "F4", "F6", "F8", "F10"]
+const fieldValues = fieldRange.map(f => formWS.getRange(f).getValue())
+//Cells that will show the data into the formulary WorkSheet
+//The "fieldRange" order will be like the one in the data WorkSheet (see "ListCol" sheet)
+//The "fieldValues" will go through all the cells in "fieldRange" in this array
+
+//Don't change anything from these functions, except when instrucctions made
+//And you can only change information in RED or GREEN
+
+function clearForm() {
+  fieldRange.forEach(f => formWS.getRange(f).clearContent())
+  searchCell.clearContent()
+  idCell.clearContent()
+}
+
+function searchForm() {
+  const searchValue = searchCell.getValue()
+  const dataSrchForm = dataWS.getRange("A2:J").getValues()
+  //Change the column J to the last column with info in your data WorkSheet
+  const recordsFound = dataSrchForm.filter(r => r[9] == searchValue)
+  //Change the 9 for the green number of the FANFIC ID in the ListCol3 sheet
+  if (recordsFound.lenght === 0) return
+  idCell.setValue(recordsFound[0][0])
+  fieldRange.forEach((f, i) => formWS.getRange(f).setValue(recordsFound[0][i + 1]))
+  //change the last 1 for the green number of the NAME in the ListCol3 sheet
+}
+
+function createNewRecordNum() {
+  const nextIDCell = autGIDWS.getRange("A2")
+  const nextID = nextIDCell.getValue()
+  fieldValues.unshift(nextID)
+  dataWS.appendRow(fieldValues)
+  idCell.setValue(nextID)
+  nextIDCell.setValue(nextID + 1)
+
+  actWS.toast("with the ID: " + nextID, "New Record Added")
+  clearForm()
+}
+
+function saveRecord() {
+  const id = idCell.getValue()
+  if (id == "") {
+    createNewRecordNum()
+    return
+  }
+  const cellFound = dataWS.getRange("A:A")
+    //Change A:A for the colum where the Sequential number is
+    .createTextFinder(id)
+    .matchCase(true)
+    .matchEntireCell(true)
+    .findNext()
+  if (!cellFound) return
+  const row = cellFound.getRow()
+  fieldValues.unshift(id)
+  dataWS.getRange(row, 1, 1, fieldValues.length).setValues([fieldValues])
+
+  actWS.toast("to the ID: " + id, "Changes added!")
+  clearForm()
+}
+
+function deleteRecord() {
+  const id = idCell.getValue()
+  if (id == "") return
+
+  const cellFound = dataWS.getRange("A:A")
+    //Change A:A for the colum where the Sequential number is
+    .createTextFinder(id)
+    .matchCase(true)
+    .matchEntireCell(true)
+    .findNext()
+  if (!cellFound) return
+  const row = cellFound.getRow()
+  dataWS.deleteRow(row)
+
+  actWS.toast("with the ID:" + id, "Record deleted!")
+  clearForm()
+}
+
+function onEdit(e) {
+  if(e.range.getA1Notation()!=="F2") return
+  if(e.source.getSheetName()!== "GoogleForm") return
+  searchForm()
+}
