@@ -1,5 +1,15 @@
 //Code to count works in Google Documents
 //https://stackoverflow.com/questions/47954341/section-word-count-in-google-docs
+
+//Makes a menu to run the code
+function onOpen(e) {
+  DocumentApp.getUi()
+    .createMenu('WordCount')
+    .addItem('WordCount per Section', 'countPerSection')
+    .addToUi();
+}
+
+
 //Version 1, puts the word-counting at the end of the document.
 
 function countPerSection() {                
