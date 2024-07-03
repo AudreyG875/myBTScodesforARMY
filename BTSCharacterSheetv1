@@ -1,0 +1,99 @@
+//Simple Data Entry Form for ARMY
+//Also on https://github.com/AudreyG875/myBTScodesforARMY/
+
+const actWS = SpreadsheetApp.getActiveSpreadsheet()
+//Google Sheet document, the active WorkSheet
+
+const formWS = actWS.getSheetByName("5DEFbcsv1")
+const dataWS = actWS.getSheetByName("5DATAbcsv1")
+const autGIDWS = actWS.getSheetByName("FanficsRefs")
+//Names of the formulary WorkSheet and the data WorkSheet, always copypaste them
+
+const searchCell = formWS.getRange("A2")
+const idCell = formWS.getRange("C5")
+const fieldRange = ["A3", "D5", "B4", "A4", "B7", "B8", "B9", "B10", "E7", "E8", "E9", "E10", "B12", "B13", "B14", "B15", "G12", "G13", "G14", "B17", "A18", "G17", "G18", "B22", "B23", "B24", "B25", "B26", "B27", "B28", "B31", "B33", "B35", "A40", "B43", "B44", "B45", "B46", "B47", "B48", "B50", "B51", "B52", "B53", "B56", "B57", "B58", "A61", "A63", "A65", "A67", "A69"]
+const fieldValues = fieldRange.map(f => formWS.getRange(f).getValue())
+//Cells that will show the data into the formulary WorkSheet
+//The "fieldRange" order will be like the one in the data WorkSheet (see "ListCol" sheet)
+//The "fieldValues" will go through all the cells in "fieldRange" in this array
+
+//Don't change anything from these functions, except when instrucctions made
+//And you can only change information in RED or GREEN
+
+function clearForm() {
+  fieldRange.forEach(f => formWS.getRange(f).clearContent())
+  searchCell.clearContent()
+  idCell.clearContent()
+}
+
+function searchForm() {
+  const searchValue = searchCell.getDisplayValue()
+  const dataSrchForm = dataWS.getRange("A2:BC").getValues()
+  //Change the column J to the last column with info in your data WorkSheet
+  const recordsFound = dataSrchForm.filter(r => r[53] == searchValue)
+  //Change the 9 for the green number of the CHARACTER ID in the ListCol3 sheet
+  if (recordsFound.length === 0) return
+  idCell.setValue(recordsFound[0][0])
+  fieldRange.forEach((f, i) => formWS.getRange(f).setValue(recordsFound[0][i + 1]))
+}
+
+function createNewRecordNum() {
+  const nextIDCell = autGIDWS.getRange("E2")
+  const nextID = nextIDCell.getValue()
+  fieldValues.unshift(nextID)
+  dataWS.appendRow(fieldValues)
+  idCell.setValue(nextID)
+  nextIDCell.setValue(nextID + 1)
+
+  actWS.toast("with the ID: " + nextID, "New Record Added")
+  clearForm()
+}
+
+function saveRecord() {
+  const id = idCell.getValue()
+  if (id == "") {
+    createNewRecordNum()
+    return
+  }
+  const cellFound = dataWS.getRange("A:A")
+    //Change A:A for the colum where the Sequential number is
+    .createTextFinder(id)
+    .matchCase(true)
+    .matchEntireCell(true)
+    .findNext()
+  if (!cellFound) return
+  const row = cellFound.getRow()
+  fieldValues.unshift(id)
+  dataWS.getRange(row, 1, 1, fieldValues.length).setValues([fieldValues])
+
+  actWS.toast("to the ID: " + id, "Changes added!")
+  clearForm()
+}
+
+function deleteRecord() {
+  const id = idCell.getValue()
+  if (id == "") return
+
+  var interface = SpreadsheetApp.getUi();
+  var answer = interface.alert('Are you sure you want to delete this record?', interface.ButtonSet.YES_NO);
+  if (answer == interface.Button.YES) {
+    const cellFound = dataWS.getRange("A:A")
+      //Change A:A for the colum where the Sequential number is
+      .createTextFinder(id)
+      .matchCase(true)
+      .matchEntireCell(true)
+      .findNext()
+    if (!cellFound) return
+    const row = cellFound.getRow()
+    dataWS.deleteRow(row)
+
+    actWS.toast("with the ID:" + id, "Record deleted!")
+    clearForm()
+  }
+}
+
+function onEdit(e) {
+  if(e.range.getA1Notation()!=="A2") return
+  if(e.source.getSheetName()!== "5DEFbcsv1") return
+  searchForm()
+}
